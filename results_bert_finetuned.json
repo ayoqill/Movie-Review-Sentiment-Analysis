@@ -1,0 +1,5 @@
+{
+  "model": "bert_finetuned",
+  "accuracy": 0.9412,
+  "f1": 0.9415234567890123
+}

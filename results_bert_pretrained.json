@@ -1,0 +1,5 @@
+{
+  "model": "bert_pretrained",
+  "accuracy": 0.8315,
+  "f1": 0.8265211572119839
+}

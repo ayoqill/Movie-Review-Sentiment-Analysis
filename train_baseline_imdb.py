@@ -1,4 +1,5 @@
 import re
+import json
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
@@ -56,6 +57,16 @@ def main():
 
     print("Classification Report:")
     print(classification_report(y_test, preds, target_names=["negative", "positive"]))
+
+    # Save results as JSON
+    results = {
+        "model": "baseline",
+        "accuracy": float(acc),
+        "f1": float(f1)
+    }
+    with open("results_baseline.json", "w") as f:
+        json.dump(results, f, indent=2)
+    print("\n✅ Results saved to results_baseline.json")
 
 if __name__ == "__main__":
     main()

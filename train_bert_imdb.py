@@ -1,4 +1,5 @@
 import re
+import json
 import numpy as np
 import pandas as pd
 
@@ -48,7 +49,7 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     def tokenize(batch):
-        return tokenizer(batch["review"], truncation=True, padding="max_length", max_length=256)
+        return tokenizer(batch["review"], truncation=True, padding="max_length", max_length=128, return_tensors=None)
 
     train_ds = train_ds.map(tokenize, batched=True)
     test_ds  = test_ds.map(tokenize, batched=True)
@@ -62,11 +63,11 @@ def main():
 
     args = TrainingArguments(
         output_dir="bert_imdb_out",
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
         save_strategy="epoch",
-        num_train_epochs=2,
-        per_device_train_batch_size=8,
-        per_device_eval_batch_size=8,
+        num_train_epochs=1,
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=16,
         learning_rate=2e-5,
         weight_decay=0.01,
         logging_steps=100,
@@ -97,6 +98,22 @@ def main():
     print("\n✅ BERT Results (DistilBERT Fine-tuned)")
     print(f"Accuracy: {acc:.4f}")
     print(f"F1-score : {f1:.4f}\n")
+
+    print("Confusion Matrix:")
+    print(confusion_matrix(y_true, y_pred), "\n")
+
+    print("Classification Report:")
+    print(classification_report(y_true, y_pred, target_names=["negative", "positive"]))
+
+    # Save results as JSON
+    results = {
+        "model": "bert_finetuned",
+        "accuracy": float(acc),
+        "f1": float(f1)
+    }
+    with open("results_bert_finetuned.json", "w") as f:
+        json.dump(results, f, indent=2)
+    print("\n✅ Results saved to results_bert_finetuned.json")
 
     print("Confusion Matrix:")
     print(confusion_matrix(y_true, y_pred), "\n")
